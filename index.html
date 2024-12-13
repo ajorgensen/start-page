@@ -1,5 +1,153 @@
-<html>
-    <body>
-        <h1>Hello World</h1>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            transition: background-image 1s ease-in-out;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .time {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .date {
+            font-size: 1.5rem;
+        }
+
+        .quote {
+            margin-top: 2rem;
+            font-style: italic;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .credit {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="time" id="time">12:00:00</div>
+        <div class="greeting" id="greeting">Good morning</div>
+        <div class="date" id="date">Monday, January 1</div>
+        <div class="quote" id="quote"></div>
+    </div>
+    <div class="credit">Built by Claude</div>
+
+    <script>
+        // Background images - add more URLs as needed
+        const backgrounds = [
+            'https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8',
+            'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
+            'https://images.unsplash.com/photo-1501854140801-50d01698950b'
+        ];
+
+        // Quotes array
+        const quotes = [
+            "Breathing in, I calm body and mind. Breathing out, I smile.",
+            "Peace comes from within. Do not seek it without.",
+            "The present moment is filled with joy and happiness. If you are attentive, you will see it.",
+            "Life is available only in the present moment.",
+            "Quiet the mind, and the soul will speak."
+        ];
+
+        // Function to get consistent index for a given date
+        function getHashIndex(date, arrayLength) {
+            // Create a date string in YYYY-MM-DD format
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Simple hash function
+            let hash = 0;
+            for (let i = 0; i < dateStr.length; i++) {
+                hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            
+            // Ensure positive number and get modulo
+            return Math.abs(hash) % arrayLength;
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            document.getElementById('time').textContent = timeString;
+            document.getElementById('date').textContent = dateString;
+
+            // Update greeting based on time of day
+            const hour = now.getHours();
+            let greeting = '';
+            if (hour < 12) greeting = 'Good morning';
+            else if (hour < 18) greeting = 'Good afternoon';
+            else greeting = 'Good evening';
+            
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        // Set background and quote based on current date
+        function setDailyContent() {
+            const today = new Date();
+            
+            // Get consistent indices for the day
+            const backgroundIndex = getHashIndex(today, backgrounds.length);
+            const quoteIndex = getHashIndex(today, quotes.length);
+            
+            // Set background and quote
+            document.body.style.backgroundImage = `url(${backgrounds[backgroundIndex]})`;
+            document.getElementById('quote').textContent = quotes[quoteIndex];
+        }
+
+        // Initialize
+        updateTime();
+        setDailyContent();
+
+        // Set up interval for time update only
+        setInterval(updateTime, 1000);
+    </script>
+</body>
 </html>
